@@ -148,6 +148,12 @@ fun Contenido(
                 ScreenPost(navController, servicio, it.arguments!!.getInt("id"))
             }
             composable("recetas") { ScreenRecetas(navController, servicioRecetas) }
+            composable(
+                "recetasVer/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) {
+                ScreenRecetaDetalle(navController, servicioRecetas, it.arguments!!.getInt("id"))
+            }
         }
     }
 }
