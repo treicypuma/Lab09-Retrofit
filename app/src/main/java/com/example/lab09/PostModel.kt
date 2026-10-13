@@ -9,6 +9,4 @@ data class PostModel(
     @SerializedName("body") val body: String,
     @SerializedName("link") val link: String?,
     @SerializedName("comment_count") val commentCount: Int?
-)git add .
-git commit -m "feat: crea PostModel para mapear el JSON de /posts"
-git push
+)
