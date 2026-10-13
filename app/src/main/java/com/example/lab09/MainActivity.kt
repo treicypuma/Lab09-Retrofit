@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,19 +52,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ProgPrincipal9() {
-    val urlBase = "https://json-placeholder.mock.beeceptor.com/"
+    // Retrofit para JSONPlaceholder (parte guiada)
     val retrofit = Retrofit.Builder()
-        .baseUrl(urlBase)
+        .baseUrl("https://json-placeholder.mock.beeceptor.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
     val servicio = remember { retrofit.create(PostApiService::class.java) }
+
+    // Retrofit para DummyJSON (Ejercicio 1)
+    val retrofitRecetas = Retrofit.Builder()
+        .baseUrl("https://dummyjson.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val servicioRecetas = remember { retrofitRecetas.create(RecipeApiService::class.java) }
+
     val navController = rememberNavController()
 
     Scaffold(
         topBar = { BarraSuperior() },
         bottomBar = { BarraInferior(navController) },
-        content = { paddingValues -> Contenido(paddingValues, navController, servicio) }
+        content = { paddingValues ->
+            Contenido(paddingValues, navController, servicio, servicioRecetas)
+        }
     )
 }
 
@@ -73,7 +83,7 @@ fun BarraSuperior() {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "JSONPlaceHolder Access",
+                text = "Lab 09 - Retrofit",
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
@@ -104,6 +114,12 @@ fun BarraInferior(navController: NavHostController) {
             selected = rutaActual == "posts",
             onClick = { navController.navigate("posts") }
         )
+        NavigationBarItem(
+            icon = { Icon(Icons.Outlined.Restaurant, contentDescription = "Recetas") },
+            label = { Text("Recetas") },
+            selected = rutaActual == "recetas",
+            onClick = { navController.navigate("recetas") }
+        )
     }
 }
 
@@ -111,7 +127,8 @@ fun BarraInferior(navController: NavHostController) {
 fun Contenido(
     pv: PaddingValues,
     navController: NavHostController,
-    servicio: PostApiService
+    servicio: PostApiService,
+    servicioRecetas: RecipeApiService
 ) {
     Box(
         modifier = Modifier
@@ -130,6 +147,7 @@ fun Contenido(
             ) {
                 ScreenPost(navController, servicio, it.arguments!!.getInt("id"))
             }
+            composable("recetas") { ScreenRecetas(navController, servicioRecetas) }
         }
     }
 }
